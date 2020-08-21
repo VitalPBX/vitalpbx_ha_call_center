@@ -260,7 +260,7 @@ To update VitalPBX to the latest version just follow the following steps:<br>
 
 ## More Information
 If you want more information that will help you solve problems about High Availability in VitalPBX we invite you to see the following manual<br>
-[High Availability Manual, step by step](https://github.com/VitalPBX/vitalpbx_ha/raw/master/VitalPBX3.0HighAvailabilitySetup.pdf)
+[High Availability Manual, step by step](https://github.com/VitalPBX/vitalpbx_ha/raw/master/VitalPBX3.0HighAvailabilityCallCentersSetup.pdf)
 
 <strong>CONGRATULATIONS</strong>, you have installed and tested the high availability in <strong>VitalPBX 3</strong><br>
 :+1:
