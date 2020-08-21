@@ -178,9 +178,9 @@ In Server 1 we are going to create an Api Key through which Sonata Switchboard w
 In the Server 3 console we are going to execute the following command to update the connection values of Sonata Switchboard.:
 
 <pre>
-[root@ vitalpbx3 ~]# mysql -uroot astboard -e "UPDATE pbx SET host='192.168.10.60', remote_host='yes', api_key='babf43dbf6b8298f46e3e7381345afbf '"
-[root@ vitalpbx3 ~]# sed -i -r 's/localhost/192.168.10.60/' /usr/share/sonata/switchboard/monitor/config.ini
-[root@ vitalpbx3 ~]# systemctl restart switchboard
+[root@ vitalpbx<strong>3</strong> ~]# mysql -uroot astboard -e "UPDATE pbx SET host='192.168.10.60', remote_host='yes', api_key='babf43dbf6b8298f46e3e7381345afbf '"
+[root@ vitalpbx<strong>3</strong> ~]# sed -i -r 's/localhost/192.168.10.60/' /usr/share/sonata/switchboard/monitor/config.ini
+[root@ vitalpbx<strong>3</strong> ~]# systemctl restart switchboard
 </pre>
 Remember to change the Api Key for the value copied in the previous step.
 
