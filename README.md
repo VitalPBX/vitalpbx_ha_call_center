@@ -40,7 +40,7 @@ Install the necessary dependencies in Server 1 and 2<br>
 </pre>
 
 ## Create authorization key
-Create authorization key for the Access between the Server 1 and 2 without credentials. And create authorization key for access from Server 1 and 2 to Server 3.
+Create authorization key for the Access between the Server 1 and 2 without credentials. And create authorization key for access from Server 1 and 2 to Server 3.<br>
 Create key in Server <strong>1</strong> to access Server <strong>2</strong> and <strong>3</strong>
 <pre>
 [root@vitalpbx<strong>1</strong> ~]# ssh-keygen -f /root/.ssh/id_rsa -t rsa -N '' >/dev/null
