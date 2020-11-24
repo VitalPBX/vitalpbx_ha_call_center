@@ -104,7 +104,7 @@ Now copy and run the following script<br>
 <pre>
 [root@ vitalpbx<strong>1</strong> ~]# mkdir /usr/share/vitalpbx/ha
 [root@ vitalpbx<strong>1</strong> ~]# cd /usr/share/vitalpbx/ha
-[root@ vitalpbx<strong>1</strong> ~]# wget https://raw.githubusercontent.com/VitalPBX/vitalpbx_ha/master/vpbxgaha.sh
+[root@ vitalpbx<strong>1</strong> ~]# wget https://raw.githubusercontent.com/VitalPBX/vitalpbx_ha_call_center/master/vpbxgaha.sh
 [root@ vitalpbx<strong>1</strong> ~]# chmod +x vpbxgaha.sh
 [root@ vitalpbx<strong>1</strong> ~]# ./vpbxgaha.sh
 
