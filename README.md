@@ -86,7 +86,6 @@ and check to make sure that only the key(s) you wanted were added.
 </pre>
 
 <pre>
-[root@vitalpbx<strong>2</strong> ~]# ssh-keygen -f /root/.ssh/id_rsa -t rsa -N '' >/dev/null
 [root@vitalpbx<strong>2</strong> ~]# ssh-copy-id root@<strong>192.168.10.63</strong>
 Are you sure you want to continue connecting (yes/no)? <strong>yes</strong>
 root@192.168.10.63's password: <strong>(remote server root’s password)</strong>
