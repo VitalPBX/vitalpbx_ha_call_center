@@ -303,11 +303,34 @@ mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA5404
 mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA21064'"
 mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA9929'"
 mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'Asterisk AMI'"
-
-
-
-
-
+#Remove memory Firewall Rules in Server 1 and 2 and App
+firewall-cmd --add-service=high-availability
+firewall-cmd --zone=public --remove-port=3306/tcp
+firewall-cmd --zone=public --remove-port=4567/tcp
+firewall-cmd --zone=public --remove-port=4568/tcp
+firewall-cmd --zone=public --remove-port=4444/tcp
+firewall-cmd --zone=public --remove-port=4567/udp
+firewall-cmd --zone=public --remove-port=5038/udp
+firewall-cmd --zone=public --remove-rich-rule 'rule family='ipv4' source address='$ip_app' port port=5038 protocol=tcp accept'
+firewall-cmd --runtime-to-permanent
+firewall-cmd --reload
+ssh root@$ip_standby "firewall-cmd --remove-service=high-availability"
+ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=3306/tcp"
+ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=4567/tcp"
+ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=4568/tcp"
+ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=4444/tcp"
+ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=4567/udp"
+ssh root@$ip_standby "firewall-cmd --zone=public --add-port=5038/udp"
+ssh root@$ip_standby 'firewall-cmd --zone=public --remove-rich-rule "rule family='ipv4' source address='$ip_app' port port=5038 protocol=tcp accept"'
+ssh root@$ip_standby "firewall-cmd --runtime-to-permanent"
+ssh root@$ip_standby "firewall-cmd --reload"
+ssh root@$ip_app "firewall-cmd --zone=public --remove-port=3306/tcp"
+ssh root@$ip_app "firewall-cmd --zone=public --remove-port=4567/tcp"
+ssh root@$ip_app "firewall-cmd --zone=public --remove-port=4568/tcp"
+ssh root@$ip_app "firewall-cmd --zone=public --remove-port=4444/tcp"
+ssh root@$ip_app "firewall-cmd --zone=public --remove-port=4567/udp"
+ssh root@$ip_app "firewall-cmd --runtime-to-permanent"
+ssh root@$ip_app "firewall-cmd --reload"
 echo -e "************************************************************"
 echo -e "*            Cluster destroyed successfully                *"
 echo -e "************************************************************"		
