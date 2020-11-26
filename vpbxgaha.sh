@@ -199,7 +199,42 @@ rm -rf /usr/local/bin/bascul
 rm -rf /usr/local/bin/role
 ssh root@$ip_standby "rm -rf /usr/local/bin/bascul"
 ssh root@$ip_standby "rm -rf /usr/local/bin/role"
-
+echo -e "************************************************************"
+echo -e "*         Remove Firewall Services/Rules in Mariadb        *"
+echo -e "************************************************************"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'MariaDB Client'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'MariaDB Galera Traffic'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'MariaDB Galera SST'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA2224'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA3121'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA5403'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA5404-5405'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA21064'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA9929'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'Asterisk AMI'" | awk 'NR==2')
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_whitelist WHERE description = 'Server 1 IP'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_whitelist WHERE description = 'Server 2 IP'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_whitelist WHERE description = 'Server App IP'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'MariaDB Client'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'MariaDB Galera Traffic'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'MariaDB Galera SST'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA2224'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA3121'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA5403'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA5404-5405'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA21064'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA9929'"
+mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'Asterisk AMI'"
 cat > /etc/my.cnf.d/server.cnf << EOF
 #
 # These groups are read by MariaDB server.
@@ -268,43 +303,9 @@ ssh root@$ip_standby "systemctl stop lsyncd"
 ssh root@$ip_standby "systemctl enable asterisk"
 ssh root@$ip_standby "systemctl restart asterisk"
 echo -e "************************************************************"
-echo -e "*                Remove Firewall Services                     *"
+echo -e "*  Remove memory Firewall Rules in Server 1 and 2 and App  *"
 echo -e "************************************************************"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'MariaDB Client'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'MariaDB Galera Traffic'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'MariaDB Galera SST'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA2224'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA3121'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA5403'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA5404-5405'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA21064'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'HA9929'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-service_id=$(mysql -uroot ombutel -e "select firewall_service_id from ombu_firewall_services where name = 'Asterisk AMI'" | awk 'NR==2')
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_rules WHERE firewall_service_id = $service_id"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_whitelist WHERE description = 'Server 1 IP'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_whitelist WHERE description = 'Server 2 IP'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_whitelist WHERE description = 'Server App IP'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'MariaDB Client'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'MariaDB Galera Traffic'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'MariaDB Galera SST'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA2224'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA3121'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA5403'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA5404-5405'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA21064'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'HA9929'"
-mysql -uroot ombutel -e "DELETE FROM ombu_firewall_services WHERE name = 'Asterisk AMI'"
-#Remove memory Firewall Rules in Server 1 and 2 and App
-firewall-cmd --add-service=high-availability
+firewall-cmd --remove-service=high-availability
 firewall-cmd --zone=public --remove-port=3306/tcp
 firewall-cmd --zone=public --remove-port=4567/tcp
 firewall-cmd --zone=public --remove-port=4568/tcp
@@ -320,7 +321,7 @@ ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=4567/tcp"
 ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=4568/tcp"
 ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=4444/tcp"
 ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=4567/udp"
-ssh root@$ip_standby "firewall-cmd --zone=public --add-port=5038/udp"
+ssh root@$ip_standby "firewall-cmd --zone=public --remove-port=5038/udp"
 ssh root@$ip_standby 'firewall-cmd --zone=public --remove-rich-rule "rule family='ipv4' source address='$ip_app' port port=5038 protocol=tcp accept"'
 ssh root@$ip_standby "firewall-cmd --runtime-to-permanent"
 ssh root@$ip_standby "firewall-cmd --reload"
