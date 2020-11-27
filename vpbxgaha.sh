@@ -332,7 +332,7 @@ ssh root@$ip_app "firewall-cmd --zone=public --remove-port=4444/tcp"
 ssh root@$ip_app "firewall-cmd --zone=public --remove-port=4567/udp"
 ssh root@$ip_app "firewall-cmd --runtime-to-permanent"
 ssh root@$ip_app "firewall-cmd --reload"
-rm step.txt
+rm -rf step.txt
 echo -e "************************************************************"
 echo -e "*            Cluster destroyed successfully                *"
 echo -e "************************************************************"		
