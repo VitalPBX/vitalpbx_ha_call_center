@@ -587,6 +587,7 @@ echo -e "************************************************************"
 #Now on the Master-1 server, do a dump of the database MySQL and copy it to Master-2 and Master-App
 mysqldump -u root --all-databases > all_databases.sql
 scp all_databases.sql root@$ip_standby:/tmp/all_databases.sql
+scp all_databases.sql root@$ip_app:/tmp/all_databases.sql
 cat > /tmp/mysqldump.sh << EOF
 #!/bin/bash
 mysql mysql -u root <  /tmp/all_databases.sql 
