@@ -367,45 +367,48 @@ case $step in
 		start="create_ami_user"
   	;;
 	5)
-		start="create_galera_config"
+		start="copy_mysql_database"
   	;;
 	6)
-		start="create_lsyncd_config_file"
+		start="create_galera_config"
   	;;
 	7)
-		start="create_hacluster_password"
+		start="create_lsyncd_config_file"
   	;;
 	8)
-		start="starting_pcs"
+		start="create_hacluster_password"
   	;;
 	9)
-		start="auth_hacluster"
+		start="starting_pcs"
   	;;
 	10)
-		start="creating_cluster"
+		start="auth_hacluster"
   	;;
 	11)
-		start="starting_cluster"
+		start="creating_cluster"
   	;;
 	12)
-		start="creating_floating_ip"
+		start="starting_cluster"
   	;;
 	13)
+		start="creating_floating_ip"
+  	;;
+	14)
 		start="disable_services"
 	;;
-	14)
+	15)
 		start="create_asterisk_service"
 	;;
-	15)
+	16)
 		start="create_lsyncd_service"
 	;;
-	16)
+	17)
 		start="vitalpbx_create_bascul"
 	;;
-	17)
+	18)
 		start="vitalpbx_create_role"
 		;;
-	18)
+	19)
 		start="ceate_welcome_message"
 	;;
 esac
@@ -577,6 +580,26 @@ chown apache:root /etc/asterisk/vitalpbx/manager__50-astboard-user.conf
 echo -e "*** Done Step 5 ***"
 echo -e "5"	> step.txt
 
+copy_mysql_database:
+echo -e "************************************************************"
+echo -e "*                Copy Mysql databases                      *"
+echo -e "************************************************************"
+#Now on the Master-1 server, do a dump of the database MySQL and copy it to Master-2 and Master-App
+mysqldump -u root --all-databases > all_databases.sql
+scp all_databases.sql root@$ip_standby:/tmp/all_databases.sql
+cat > /tmp/mysqldump.sh << EOF
+#!/bin/bash
+mysql mysql -u root <  /tmp/all_databases.sql 
+EOF
+scp /tmp/mysqldump.sh root@$ip_standby:/tmp/mysqldump.sh
+ssh root@$ip_standby "chmod +x /tmp/mysqldump.sh"
+ssh root@$ip_standby "/tmp/./mysqldump.sh"
+scp /tmp/mysqldump.sh root@$ip_app:/tmp/mysqldump.sh
+ssh root@$ip_app "chmod +x /tmp/mysqldump.sh"
+ssh root@$ip_app "/tmp/./mysqldump.sh"
+echo -e "*** Done Step 6 ***"
+echo -e "6"	> step.txt
+
 create_galera_config:
 echo -e "************************************************************"
 echo -e "*             Creating Galera Config File                  *"
@@ -733,28 +756,12 @@ echo -e "************************************************************"
 echo -e "*          Creating and Starting Galera Cluster            *"
 echo -e "*   Be patient, this process can take a couple of minutes  *"
 echo -e "************************************************************"
-
-#Now on the Master-1 server, do a dump of the database MySQL and copy it to Master-2 and Master-App
-mysqldump -u root --all-databases > all_databases.sql
-scp all_databases.sql root@$ip_standby:/tmp/all_databases.sql
-cat > /tmp/mysqldump.sh << EOF
-#!/bin/bash
-mysql mysql -u root <  /tmp/all_databases.sql 
-EOF
-scp /tmp/mysqldump.sh root@$ip_standby:/tmp/mysqldump.sh
-ssh root@$ip_standby "chmod +x /tmp/mysqldump.sh"
-ssh root@$ip_standby "/tmp/./mysqldump.sh"
-
-scp /tmp/mysqldump.sh root@$ip_app:/tmp/mysqldump.sh
-ssh root@$ip_app "chmod +x /tmp/mysqldump.sh"
-ssh root@$ip_app "/tmp/./mysqldump.sh"
-
 systemctl stop mariadb
 galera_new_cluster
 ssh root@$ip_standby "systemctl restart mariadb"
 ssh root@$ip_app "systemctl restart mariadb"
-echo -e "*** Done Step 6 ***"
-echo -e "6"	> step.txt
+echo -e "*** Done Step 7 ***"
+echo -e "7"	> step.txt
 
 create_lsyncd_config_file:
 echo -e "************************************************************"
@@ -1108,8 +1115,8 @@ sync {
 }
 EOF
 scp /tmp/lsyncd.conf root@$ip_standby:/etc/lsyncd.conf
-echo -e "*** Done Step 7 ***"
-echo -e "7"	> step.txt
+echo -e "*** Done Step 8 ***"
+echo -e "8"	> step.txt
 
 create_hacluster_password:
 echo -e "************************************************************"
@@ -1117,8 +1124,8 @@ echo -e "*     Create password for hacluster in Master/Standby      *"
 echo -e "************************************************************"
 echo $hapassword | passwd --stdin hacluster
 ssh root@$ip_standby "echo $hapassword | passwd --stdin hacluster"
-echo -e "*** Done Step 8 ***"
-echo -e "8"	> step.txt
+echo -e "*** Done Step 9 ***"
+echo -e "9"	> step.txt
 
 starting_pcs:
 echo -e "************************************************************"
@@ -1132,24 +1139,24 @@ systemctl enable pacemaker.service
 ssh root@$ip_standby "systemctl enable pcsd.service"
 ssh root@$ip_standby "systemctl enable corosync.service"
 ssh root@$ip_standby "systemctl enable pacemaker.service"
-echo -e "*** Done Step 9 ***"
-echo -e "9"	> step.txt
+echo -e "*** Done Step 10 ***"
+echo -e "10"	> step.txt
 
 auth_hacluster:
 echo -e "************************************************************"
 echo -e "*            Server Authenticate in Master                 *"
 echo -e "************************************************************"
 pcs cluster auth $host_master $host_standby -u hacluster -p $hapassword
-echo -e "*** Done Step 10 ***"
-echo -e "10"	> step.txt
+echo -e "*** Done Step 11 ***"
+echo -e "11"	> step.txt
 
 creating_cluster:
 echo -e "************************************************************"
 echo -e "*              Creating Cluster in Master                  *"
 echo -e "************************************************************"
 pcs cluster setup --name cluster_vitalpbx $host_master $host_standby
-echo -e "*** Done Step 11 ***"
-echo -e "11"	> step.txt
+echo -e "*** Done Step 12 ***"
+echo -e "12"	> step.txt
 
 starting_cluster:
 echo -e "************************************************************"
@@ -1159,8 +1166,8 @@ pcs cluster start --all
 pcs cluster enable --all
 pcs property set stonith-enabled=false
 pcs property set no-quorum-policy=ignore
-echo -e "*** Done Step 12 ***"
-echo -e "12"	> step.txt
+echo -e "*** Done Step 13 ***"
+echo -e "13"	> step.txt
 
 creating_floating_ip:
 echo -e "************************************************************"
@@ -1169,8 +1176,8 @@ echo -e "************************************************************"
 pcs resource create virtual_ip ocf:heartbeat:IPaddr2 ip=$ip_floating cidr_netmask=$ip_floating_mask op monitor interval=30s on-fail=restart
 pcs cluster cib drbd_cfg
 pcs cluster cib-push drbd_cfg
-echo -e "*** Done Step 13 ***"
-echo -e "13"	> step.txt
+echo -e "*** Done Step 14 ***"
+echo -e "14"	> step.txt
 
 disable_services:
 echo -e "************************************************************"
@@ -1184,8 +1191,8 @@ ssh root@$ip_standby "systemctl disable asterisk"
 ssh root@$ip_standby "systemctl stop asterisk"
 ssh root@$ip_standby "systemctl disable lsyncd"
 ssh root@$ip_standby "systemctl stop lsyncd"
-echo -e "*** Done Step 14 ***"
-echo -e "14"	> step.txt
+echo -e "*** Done Step 15 ***"
+echo -e "15"	> step.txt
 
 create_asterisk_service:
 echo -e "************************************************************"
@@ -1203,8 +1210,8 @@ pcs cluster cib-push fs_cfg --config
 pcs resource update asterisk op stop timeout=120s
 pcs resource update asterisk op start timeout=120s
 pcs resource update asterisk op restart timeout=120s
-echo -e "*** Done Step 15 ***"
-echo -e "15"	> step.txt
+echo -e "*** Done Step 16 ***"
+echo -e "16"	> step.txt
 
 create_lsyncd_service:
 echo -e "************************************************************"
@@ -1216,8 +1223,8 @@ pcs cluster cib-push fs_cfg --config
 pcs -f fs_cfg constraint colocation add lsyncd with virtual_ip INFINITY
 pcs -f fs_cfg constraint order asterisk then lsyncd
 pcs cluster cib-push fs_cfg --config
-echo -e "*** Done Step 16 ***"
-echo -e "16"	> step.txt
+echo -e "*** Done Step 17 ***"
+echo -e "17"	> step.txt
 
 vitalpbx_create_bascul:
 echo -e "************************************************************"
@@ -1307,8 +1314,8 @@ EOF
 chmod +x /usr/local/bin/bascul
 scp /usr/local/bin/bascul root@$ip_standby:/usr/local/bin/bascul
 ssh root@$ip_standby 'chmod +x /usr/local/bin/bascul'
-echo -e "*** Done Step 17 ***"
-echo -e "17"	> step.txt
+echo -e "*** Done Step 18 ***"
+echo -e "18"	> step.txt
 
 vitalpbx_create_role:
 echo -e "************************************************************"
@@ -1381,8 +1388,8 @@ EOF
 chmod +x /usr/local/bin/role
 scp /usr/local/bin/role root@$ip_standby:/usr/local/bin/role
 ssh root@$ip_standby 'chmod +x /usr/local/bin/role'
-echo -e "*** Done Step 18 ***"
-echo -e "18"	> step.txt
+echo -e "*** Done Step 19 ***"
+echo -e "19"	> step.txt
 
 ceate_welcome_message:
 echo -e "************************************************************"
@@ -1393,8 +1400,8 @@ chmod 755 /etc/profile.d/vitalwelcome.sh
 echo -e "*** Done ***"
 scp /etc/profile.d/vitalwelcome.sh root@$ip_standby:/etc/profile.d/vitalwelcome.sh
 ssh root@$ip_standby "chmod 755 /etc/profile.d/vitalwelcome.sh"
-echo -e "*** Done Step 19 END ***"
-echo -e "19"	> step.txt
+echo -e "*** Done Step 20 END ***"
+echo -e "20"	> step.txt
 
 vitalpbx_cluster_ok:
 echo -e "************************************************************"
