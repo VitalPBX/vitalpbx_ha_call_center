@@ -332,16 +332,16 @@ ssh root@$ip_app "firewall-cmd --zone=public --remove-port=4444/tcp"
 ssh root@$ip_app "firewall-cmd --zone=public --remove-port=4567/udp"
 ssh root@$ip_app "firewall-cmd --runtime-to-permanent"
 ssh root@$ip_app "firewall-cmd --reload"
-rm -rf step.txt
 echo -e "************************************************************"
 echo -e "*            Cluster destroyed successfully                *"
 echo -e "************************************************************"		
 	fi
+	echo -e "2"	> step.txt
 	exit
 fi
 
 if [ "$arg" = 'rebuild' ] ;then
-	step=4
+	step=2
 else
 	stepFile=step.txt
 	if [ -f $stepFile ]; then
