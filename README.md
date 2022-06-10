@@ -7,7 +7,8 @@ High availability is a characteristic of a system which aims to ensure an agreed
 Make a high-availability cluster out of any pair of VitalPBX servers. VitalPBX can detect a range of failures on one VitalPBX server and automatically transfer control to the other server, resulting in a telephony environment with minimal down time.<br>
 
 <strong>Important note:</strong><br>
-Since DRBD is no longer used in version 3, it is not possible to migrate a High Availability VitalPBX from Version 2 to 3.
+Since DRBD is no longer used in version 3, it is not possible to migrate a High Availability VitalPBX from Version 2 to 3.<br>
+The VitalPBX team does not provide support for systems in an HA environment because it is not possible to determine the environment where it has been installed.
 
 ## Example:<br>
 ![VitalPBX HA](https://github.com/VitalPBX/vitalpbx_ha_call_center/blob/master/HACallCenter3Servers.png)
